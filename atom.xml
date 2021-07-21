@@ -6,7 +6,7 @@
   <link href="https://blog.farmer233.top/atom.xml" rel="self"/>
   
   <link href="https://blog.farmer233.top/"/>
-  <updated>2021-07-20T14:53:58.707Z</updated>
+  <updated>2021-07-21T16:57:44.546Z</updated>
   <id>https://blog.farmer233.top/</id>
   
   <author>
@@ -15,6 +15,38 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>[Leetcode]数据结构题目集第六天</title>
+    <link href="https://blog.farmer233.top/2021/07/21/Leetcode-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E9%A2%98%E7%9B%AE%E9%9B%86%E7%AC%AC%E5%85%AD%E5%A4%A9/"/>
+    <id>https://blog.farmer233.top/2021/07/21/Leetcode-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E9%A2%98%E7%9B%AE%E9%9B%86%E7%AC%AC%E5%85%AD%E5%A4%A9/</id>
+    <published>2021-07-21T15:56:16.000Z</published>
+    <updated>2021-07-21T16:57:44.546Z</updated>
+    
+    <content type="html"><![CDATA[<p>这次题目有三题，分别是<code>字符串中的第一个唯一字符</code>、<code>赎金信</code>和<code>有效的字母异位词</code>.<br>今天三道题目的思路都差不多，感觉都是<code>两个数组的交集 II</code>的变形,内容篇幅可能比较长，目录可以快速定位到对应题目的解题思路&amp;题解.  </p><h2 id="字符串中的第一个唯一字符"><a href="#字符串中的第一个唯一字符" class="headerlink" title="字符串中的第一个唯一字符"></a>字符串中的第一个唯一字符</h2><blockquote><p>给定一个字符串，找到它的第一个不重复的字符，并返回它的索引。如果不存在，则返回 -1。</p></blockquote><p>示例：</p><figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">s</span> = <span class="string">"leetcode"</span></span><br><span class="line">返回 <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="attribute">s</span> = <span class="string">"loveleetcode"</span></span><br><span class="line">返回 <span class="number">2</span></span><br></pre></td></tr></table></figure><h3 id="解题思路-amp-题解"><a href="#解题思路-amp-题解" class="headerlink" title="解题思路&amp;题解"></a>解题思路&amp;题解</h3><p>拿到题目的第一反应是和之前<code>两个数组的交集 II</code>一样的思路。<br>通过哈希表记录元素出现的下标，然后扫码字符串找出出现的次数为1的元素，然后返回该元素的下标。<br>大致思路: </p><ol><li>数组0-25表示’a’ -&gt; ‘z’</li><li>哈希表使用一个26长度的数组表示</li><li>数组内容表示元素出现次数</li></ol><p>代码如下：</p><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">firstUniqChar</span><span class="params">(s <span class="keyword">string</span>)</span> <span class="title">int</span></span> &#123;</span><br><span class="line">items := [<span class="number">26</span>]<span class="keyword">int</span>&#123;&#125;</span><br><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(s); i++ &#123;</span><br><span class="line">items[s[i]-<span class="string">'a'</span>]++</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(s); i++ &#123;</span><br><span class="line"><span class="keyword">if</span> items[s[i]-<span class="string">'a'</span>] == <span class="number">1</span> &#123;</span><br><span class="line"><span class="keyword">return</span> i</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="number">-1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h2 id="赎金信"><a href="#赎金信" class="headerlink" title="赎金信"></a>赎金信</h2><blockquote><p>给定一个赎金信 (ransom) 字符串和一个杂志(magazine)字符串，判断第一个字符串 ransom 能不能由第二个字符串 magazines 里面的字符构成。如果可以构成，返回 true ；否则返回 false。</p></blockquote><p>(题目说明：为了不暴露赎金信字迹，要从杂志上搜索各个需要的字母，组成单词来表达意思。杂志字符串中的每个字符只能在赎金信字符串中使用一次。)</p><p>示例 1：</p><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：<span class="attr">ransomNote</span> = <span class="string">"a"</span>, <span class="attr">magazine</span> = <span class="string">"b"</span></span><br><span class="line">输出：<span class="literal">false</span></span><br></pre></td></tr></table></figure><p>示例 2：</p><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：<span class="attr">ransomNote</span> = <span class="string">"aa"</span>, <span class="attr">magazine</span> = <span class="string">"ab"</span></span><br><span class="line">输出：<span class="literal">false</span></span><br></pre></td></tr></table></figure><p>示例 3：</p><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入：<span class="attr">ransomNote</span> = <span class="string">"aa"</span>, <span class="attr">magazine</span> = <span class="string">"aab"</span></span><br><span class="line">输出：<span class="literal">true</span></span><br></pre></td></tr></table></figure><h3 id="解题思路-amp-题解-1"><a href="#解题思路-amp-题解-1" class="headerlink" title="解题思路&amp;题解"></a>解题思路&amp;题解</h3><p>这题与上一题差不多，思路上甚至更像<code>两个数组的交集 II</code>，也是通过一个数组哈希表存储字符出现的次数。<br>第二次遍历的时候将数组内容减一，当内容为0时表示内容不够则返回<code>false</code></p><p>代码如下：</p><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">canConstruct</span><span class="params">(ransomNote <span class="keyword">string</span>, magazine <span class="keyword">string</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">conMap := [<span class="number">26</span>]<span class="keyword">int</span>&#123;&#125;</span><br><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(magazine); i++ &#123;</span><br><span class="line">conMap[magazine[i]-<span class="string">'a'</span>]++</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(ransomNote); i++ &#123;</span><br><span class="line"><span class="keyword">if</span> conMap[ransomNote[i]-<span class="string">'a'</span>] == <span class="number">0</span> &#123;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br><span class="line">conMap[ransomNote[i]-<span class="string">'a'</span>]--</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><h2 id="有效的字母异位词"><a href="#有效的字母异位词" class="headerlink" title="有效的字母异位词"></a>有效的字母异位词</h2><blockquote><p>给定两个字符串 s 和 t ，编写一个函数来判断 t 是否是 s 的字母异位词。<br><strong>注意：若 <code>s</code> 和 <code>t</code> 中每个字符出现的次数都相同，则称 <code>s</code> 和 <code>t</code> 互为字母异位词。</strong></p></blockquote><p>示例 1:</p><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入: <span class="attr">s</span> = <span class="string">"anagram"</span>, <span class="attr">t</span> = <span class="string">"nagaram"</span></span><br><span class="line">输出: <span class="literal">true</span></span><br></pre></td></tr></table></figure><p>示例 2:</p><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入: <span class="attr">s</span> = <span class="string">"rat"</span>, <span class="attr">t</span> = <span class="string">"car"</span></span><br><span class="line">输出: <span class="literal">false</span></span><br></pre></td></tr></table></figure><h3 id="解题思路-amp-题解-2"><a href="#解题思路-amp-题解-2" class="headerlink" title="解题思路&amp;题解"></a>解题思路&amp;题解</h3><p>这题应该就是<code>两个数组的交集 II</code>的变形了，今天这三题整体上思路都没啥区别，不过多赘述了。    </p><p>代码如下：</p><figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">isAnagram</span><span class="params">(s <span class="keyword">string</span>, t <span class="keyword">string</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">res := [<span class="number">26</span>]<span class="keyword">int</span>&#123;&#125;</span><br><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(s); i++ &#123;</span><br><span class="line">res[s[i]-<span class="string">'a'</span>]++</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(t); i++ &#123;</span><br><span class="line"><span class="keyword">if</span> res[t[i]-<span class="string">'a'</span>] == <span class="number">0</span> &#123;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br><span class="line">res[t[i]-<span class="string">'a'</span>]--</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">for</span> _, v := <span class="keyword">range</span> res &#123;</span><br><span class="line"><span class="keyword">if</span> v != <span class="number">0</span> &#123;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;这次题目有三题，分别是&lt;code&gt;字符串中的第一个唯一字符&lt;/code&gt;、&lt;code&gt;赎金信&lt;/code&gt;和&lt;code&gt;有效的字母异位词&lt;/code&gt;.&lt;br&gt;今天三道题目的思路都差不多，感觉都是&lt;code&gt;两个数组的交集 II&lt;/code&gt;的变形,内容篇幅可能比较长，目录</summary>
+      
+    
+    
+    
+    <category term="学了些什么" scheme="https://blog.farmer233.top/categories/%E5%AD%A6%E4%BA%86%E4%BA%9B%E4%BB%80%E4%B9%88/"/>
+    
+    
+    <category term="笔记" scheme="https://blog.farmer233.top/tags/%E7%AC%94%E8%AE%B0/"/>
+    
+    <category term="刷题" scheme="https://blog.farmer233.top/tags/%E5%88%B7%E9%A2%98/"/>
+    
+    <category term="leetcode" scheme="https://blog.farmer233.top/tags/leetcode/"/>
+    
+    <category term="算法和数据结构" scheme="https://blog.farmer233.top/tags/%E7%AE%97%E6%B3%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/"/>
+    
+    <category term="Golang" scheme="https://blog.farmer233.top/tags/Golang/"/>
+    
+  </entry>
   
   <entry>
     <title>[Leetcode]有效的数独&amp;矩阵置零</title>
@@ -533,30 +565,6 @@
     <category term="前端" scheme="https://blog.farmer233.top/tags/%E5%89%8D%E7%AB%AF/"/>
     
     <category term="JavaScript" scheme="https://blog.farmer233.top/tags/JavaScript/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>[TCP/IP]随便看看TCP/IP分层模型</title>
-    <link href="https://blog.farmer233.top/2020/07/18/TCP-IP-%E9%9A%8F%E4%BE%BF%E7%9C%8B%E7%9C%8BTCP-IP%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B/"/>
-    <id>https://blog.farmer233.top/2020/07/18/TCP-IP-%E9%9A%8F%E4%BE%BF%E7%9C%8B%E7%9C%8BTCP-IP%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B/</id>
-    <published>2020-07-18T06:09:16.000Z</published>
-    <updated>2020-07-18T10:18:53.731Z</updated>
-    
-    <content type="html"><![CDATA[<p>本文不会讲过于基础的知识点，比如TCP/IP和OSI模型将不做过多介绍。  </p><p>持续更新中…</p><a id="more"></a><img src="/2020/07/18/TCP-IP-%E9%9A%8F%E4%BE%BF%E7%9C%8B%E7%9C%8BTCP-IP%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B/pack.png" class="" title="pack"><p>在TCP/IP的分层中，都会对所发送的数据附加一个首部(包头)，这个首部包含了该层的信息，如目标地址等等。  </p><p>各层的数据单位：</p><ul><li>包(全能性术语)</li><li>帧，用来表示数据链路层中包的单位</li><li>数据报，网络层以上的分层中包的单位</li><li>段，表示TCP流中的信息</li><li>消息，指应用协议中的数据单位</li></ul><h2 id="数据包的处理"><a href="#数据包的处理" class="headerlink" title="数据包的处理"></a>数据包的处理</h2><ol><li>应用程序处理<ul><li>将应用数据编码后交给下一层</li></ul></li><li>TCP模块处理<ul><li>负责建立连接、发送数据以及断开连接。</li><li>首部中包括源端口号、目标端口号和序号等</li></ul></li><li>IP模块处理<ul><li>将TCP的首部和数据段当成IP的数据段，并添加IP首部</li><li>IP首部中还包含其携带的数据是属于TCP或是UDP</li></ul></li><li>以太网接口处理</li></ol><img src="/2020/07/18/TCP-IP-%E9%9A%8F%E4%BE%BF%E7%9C%8B%E7%9C%8BTCP-IP%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B/tcp.png" class="" title="tcp">  <h2 id="以太网帧格式-Ethernet"><a href="#以太网帧格式-Ethernet" class="headerlink" title="以太网帧格式(Ethernet)"></a>以太网帧格式(Ethernet)</h2><p>以太网帧前端有一个前导码，它有0、1交替组合而成，表示一个以太网帧的开始<br>其中前导码末尾是一个叫做SFD的域，值位“11”，前导码和SFD合起来占8个字节。  </p><img src="/2020/07/18/TCP-IP-%E9%9A%8F%E4%BE%BF%E7%9C%8B%E7%9C%8BTCP-IP%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B/ethernet.png" class="" title="ethernet"><p>– 个人感觉这里理解的还不透彻，错误地方欢迎指出 –</p><h2 id="IP协议"><a href="#IP协议" class="headerlink" title="IP协议"></a>IP协议</h2><p>更新中，未完待续…</p>]]></content>
-    
-    
-    <summary type="html">&lt;p&gt;本文不会讲过于基础的知识点，比如TCP/IP和OSI模型将不做过多介绍。  &lt;/p&gt;
-&lt;p&gt;持续更新中…&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="计算机网络" scheme="https://blog.farmer233.top/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"/>
-    
-    
-    <category term="笔记" scheme="https://blog.farmer233.top/tags/%E7%AC%94%E8%AE%B0/"/>
-    
-    <category term="计算机网络基础" scheme="https://blog.farmer233.top/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/"/>
     
   </entry>
   
