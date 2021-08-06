@@ -6,7 +6,7 @@
   <link href="https://blog.farmer233.top/atom.xml" rel="self"/>
   
   <link href="https://blog.farmer233.top/"/>
-  <updated>2021-08-02T13:18:17.400Z</updated>
+  <updated>2021-08-06T18:55:16.816Z</updated>
   <id>https://blog.farmer233.top/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>提问中需要避免的一些行为</title>
+    <link href="https://blog.farmer233.top/2021/08/07/%E6%8F%90%E9%97%AE%E4%B8%AD%E9%9C%80%E8%A6%81%E9%81%BF%E5%85%8D%E7%9A%84%E4%B8%80%E4%BA%9B%E8%A1%8C%E4%B8%BA/"/>
+    <id>https://blog.farmer233.top/2021/08/07/%E6%8F%90%E9%97%AE%E4%B8%AD%E9%9C%80%E8%A6%81%E9%81%BF%E5%85%8D%E7%9A%84%E4%B8%80%E4%BA%9B%E8%A1%8C%E4%B8%BA/</id>
+    <published>2021-08-06T18:10:23.000Z</published>
+    <updated>2021-08-06T18:55:16.816Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>本文灵感源于F大的这篇文章–<a href="https://frostming.com/2019/12-26/qa-no-action/" target="_blank" rel="noopener">社区问答中需要避免的行为</a><br>长年混迹于QQ群、微信群和各大论坛，给人的印象和态度都属于是态度不友好类型。这并不是因为我鄙视菜鸟，我也曾是菜鸟（现在也是）。我这么做的原因也是我希望<strong>提问者能自己意识到问题所在</strong> -&gt; 为什么错了？应该怎么解决？这比我直接告诉他一个答案有帮助得多。逛社区这么久，我发现很多问题都提问的不是很好，不吐不快。<br>ps: 除了提问者应该学会提问外，回答者也有不好的回答。</p></blockquote><h2 id="How-To-Ask-Questions"><a href="#How-To-Ask-Questions" class="headerlink" title="How To Ask Questions"></a>How To Ask Questions</h2><p>这个问题已经是听得耳朵起茧了，故不再赘述。但必须强调的是问问题是一门高深的学问，问的好不好直接影响到你是否能得到高效、直接、有效的回答。<br><strong>关于提问总结出有一下两个比较主要的问题：</strong></p><ol><li>不会提问</li><li>X-Y问题</li></ol><p>如果不会提问，<strong>一定要阅读下面的链接</strong>：</p><ul><li><a href="https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md" target="_blank" rel="noopener">提问的智慧</a></li><li><a href="https://coolshell.cn/articles/10804.html" target="_blank" rel="noopener">X-Y问题</a></li></ul><h3 id="X-Y问题"><a href="#X-Y问题" class="headerlink" title="X-Y问题"></a>X-Y问题</h3><p>相比于不会提问，更让人恼火的是<code>X-Y问题</code>。概况起来如下：</p><ol><li>提问者想解决问题X</li><li>然后觉得Y可能是解决X问题的方法</li><li>但他不知道Y应该怎么做</li><li>于是他去问别人Y应该怎么做</li></ol><p>于是很多人都会热心的告诉这个人Y应该怎么处理，但大家都觉得Y这个方案比较怪异。经过大量的讨论浪费了大量的实践后人们终于明白了原始问题X，于是发现Y根本就不是用来解决X最合适的方案。<br>这个问题最大的问题在于：<strong>在一个根本错误的方向上浪费他人大量的时间和精力！！！</strong>十分的让人高血压！<br>关于X-Y问题，有许多的变种。不能说他们没有自己尝试动手解决问题，但这样的问题往往更浪费时间。</p><h2 id="用XXX干嘛，为什么不用XXX"><a href="#用XXX干嘛，为什么不用XXX" class="headerlink" title="用XXX干嘛，为什么不用XXX"></a>用XXX干嘛，为什么不用XXX</h2><blockquote><p>Q: 用Flask怎么做XXX？<br>A: 用Django吧</p></blockquote><p>某小白终于鼓起勇气，开始学某一框架，碰到了瓶颈，结果上来一提问，被安利了另一个框架，好嘛，白学了。这也很不负责任，我觉得要说服人用一个新的框架，接触新的知识，你得对两者都有相当的熟悉度，并且清楚两者的优劣。<br>如果你只是对其中一个比较熟悉，或者你确信已有方案确实做不到，或者要付出极大的代价才能实现，我会尽量沿用提问者已选择的方案。</p>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;本文灵感源于F大的这篇文章–&lt;a href=&quot;https://frostming.com/2019/12-26/qa-no-action/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;社区问答中需要避免的行为&lt;/a&gt;&lt;br&gt;长年</summary>
+      
+    
+    
+    
+    <category term="胡思乱语" scheme="https://blog.farmer233.top/categories/%E8%83%A1%E6%80%9D%E4%B9%B1%E8%AF%AD/"/>
+    
+    
+    <category term="胡言乱语" scheme="https://blog.farmer233.top/tags/%E8%83%A1%E8%A8%80%E4%B9%B1%E8%AF%AD/"/>
+    
+    <category term="吐槽" scheme="https://blog.farmer233.top/tags/%E5%90%90%E6%A7%BD/"/>
+    
+  </entry>
   
   <entry>
     <title>[Leetcode]数据库题目集的最后一天</title>
@@ -589,33 +616,6 @@
     <category term="python" scheme="https://blog.farmer233.top/tags/python/"/>
     
     <category term="蓝桥杯" scheme="https://blog.farmer233.top/tags/%E8%93%9D%E6%A1%A5%E6%9D%AF/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>软考网络攻城狮学习笔记</title>
-    <link href="https://blog.farmer233.top/2020/11/10/%E7%BD%91%E7%BB%9C%E6%94%BB%E5%9F%8E%E7%8B%AE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
-    <id>https://blog.farmer233.top/2020/11/10/%E7%BD%91%E7%BB%9C%E6%94%BB%E5%9F%8E%E7%8B%AE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</id>
-    <published>2020-11-10T09:27:09.000Z</published>
-    <updated>2020-11-27T10:00:55.686Z</updated>
-    
-    <content type="html"><![CDATA[<p>前天考完软考-网络攻城狮，写一下笔记趴✌🙌<br>随便记录一下，写的不算好，单纯只是做个笔记以后复习用(自己能看懂就行)</p><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>互联网可以划分为多个自治系统(autonomous system, AS) ，每个AS内部可以和别的 AS 使用不同的路由选择协议，根据使用的范围差异可以将路由选择协议划分为自治系统内部的协议和自治系统外的协议    </p><h2 id="Web安全"><a href="#Web安全" class="headerlink" title="Web安全"></a>Web安全</h2><p>这次软考下午卷考了一手web安全，常见的sql注入、XSS、一句话木马、Excel宏病毒等等，不过都说些简单问题稍有了解就能答出来。写在前面是因为这东西比较好玩并且有了解过所以在前面记录一下。<br>常见的类型: </p><ul><li>sql注入</li><li>XSS</li><li>一句话木马</li><li>Excel宏病毒</li><li>APT</li><li>DDos</li><li>蠕虫病毒</li></ul><h2 id="RIP-amp-OSPF-路由-Hot"><a href="#RIP-amp-OSPF-路由-Hot" class="headerlink" title="RIP &amp; OSPF 路由(Hot)"></a>RIP &amp; OSPF 路由(Hot)</h2><p><strong>这两个协议都是自治系统内的协议</strong>，只能用于内部网络或者说小型网络    </p><h3 id="rip"><a href="#rip" class="headerlink" title="rip"></a>rip</h3><p>通过邻居获取网络路由，再与自己的路由表合并</p><h3 id="ospf"><a href="#ospf" class="headerlink" title="ospf"></a>ospf</h3><ul><li>寻找邻居</li><li>建立邻接关系</li><li>链路状态信息传递</li><li>计算路由</li></ul><h3 id="两者对比"><a href="#两者对比" class="headerlink" title="两者对比"></a>两者对比</h3><table><thead><tr><th align="center">对比</th><th align="center">rip</th><th align="center">ospf</th></tr></thead><tbody><tr><td align="center">协议对比</td><td align="center">距离矢量协议</td><td align="center">链路状态协议</td></tr><tr><td align="center">传输成本</td><td align="center">开销低</td><td align="center">传输成本好</td></tr><tr><td align="center">实现方式</td><td align="center">计算路由跳数</td><td align="center">洪泛法(向自治系统中的所有路由发送信息)</td></tr><tr><td align="center">时间</td><td align="center">每30s发送一次</td><td align="center">当网络拓扑改变的时候</td></tr><tr><td align="center">跳数限制</td><td align="center">最多15跳(16则不可达)</td><td align="center">没限制</td></tr><tr><td align="center">使用的算法</td><td align="center">距离向量算法</td><td align="center">最短路径算法(Dijkstra)</td></tr><tr><td align="center">适用网络</td><td align="center">小型网络</td><td align="center">大型网络</td></tr><tr><td align="center">ospf的优势</td><td align="center"></td><td align="center">没有跳数限制、可变子网掩码(VESM)、网络规模大、收敛速度快</td></tr><tr><td align="center">ospf中DR的作用范围</td><td align="center"></td><td align="center">一个网段</td></tr></tbody></table><h2 id="广播域-amp-amp-冲突域-Hot"><a href="#广播域-amp-amp-冲突域-Hot" class="headerlink" title="广播域 &amp;&amp; 冲突域(Hot)"></a>广播域 &amp;&amp; 冲突域(Hot)</h2><p>区别:  </p><ul><li>广播域可以跨网段，而冲突域只是发生的同一个网段的。</li><li>冲突域：在同一个冲突域中的每一个节点都能收到所有被发送的帧;</li><li>广播域：网络中能接收任一设备发出的广播帧的所有设备的集合;</li><li>冲突域：基于第一层（物理层）;</li><li>广播域：基于第二层（数据链路层）;</li><li>一个局域网就是一个广播域（往往是指一个IP段内），广播域中的机器可以收到域中其他任何一台机器的播，而不能收到域外机器的广播，域外机器也不能收到域内机器发的广播；</li><li>冲突域：一个站点向另一个站点发出信号。能收到信号的站点就构成一个冲突域。</li><li>集线器（HUB） 所有端口都在同一个广播域，冲突域内。</li></ul><h2 id="DNSの两种查询-Hot"><a href="#DNSの两种查询-Hot" class="headerlink" title="DNSの两种查询(Hot)"></a>DNSの两种查询(Hot)</h2><h3 id="迭代查询-主机向本地域名服务器查询"><a href="#迭代查询-主机向本地域名服务器查询" class="headerlink" title="迭代查询 (主机向本地域名服务器查询)"></a>迭代查询 (主机向本地域名服务器查询)</h3><p>如果主机所询问的本地域名服务器不知道被查询域名的ip, 那么本地域名服务器就以DNS客户的身份，向其他根域名服务器继续发出查询请求报文(即替该主机继续查询)，而不是让该主机自己进行下一步的查询.因此，递归擦汗寻返回的查询结果或者是所要查询的ip地址，或者是报错，表示无法查询到所需的IP地址。</p><h3 id="递归查询-本地域名服务器向根域名服务器查询"><a href="#递归查询-本地域名服务器向根域名服务器查询" class="headerlink" title="递归查询 (本地域名服务器向根域名服务器查询)"></a>递归查询 (本地域名服务器向根域名服务器查询)</h3><p>当根域名服务器收到本地域名服务器发出的迭代查询请求报文是，要么给出所要查询的IP地址，要么告诉本地域名服务器进行后续的查询(而不是替本地域名服务器进行后续的查询)。</p><img src="/2020/11/10/%E7%BD%91%E7%BB%9C%E6%94%BB%E5%9F%8E%E7%8B%AE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/query.jpg" class="" title="query"><center>图片来源->bing搜索</center><h2 id="Tcp-amp-Udp-Hot"><a href="#Tcp-amp-Udp-Hot" class="headerlink" title="Tcp &amp; Udp(Hot)"></a>Tcp &amp; Udp(Hot)</h2><h3 id="Tcp"><a href="#Tcp" class="headerlink" title="Tcp"></a>Tcp</h3><ul><li>握手&amp;挥手</li><li>滑窗控制 –&gt; 动态规划<h3 id="udp"><a href="#udp" class="headerlink" title="udp"></a>udp</h3></li><li>头部大小: 8字节</li></ul><p>这部分内容太多了甚至还能引申出算法内容，以后单独拿出来讲吧~<br>(绝对不是挖坑！🕊)</p><h2 id="电子邮件协议-IMAP-amp-POP3-Hot"><a href="#电子邮件协议-IMAP-amp-POP3-Hot" class="headerlink" title="电子邮件协议(IMAP &amp; POP3)(Hot)"></a>电子邮件协议(IMAP &amp; POP3)(Hot)</h2><p>区别: </p><ol><li>pop3协议允许电子邮件客户端下载服务器上的邮件，但是在客户端的操作(移动、标记已读等)，不会反馈到服务器上。</li><li>IMAP客户端的操作都会反馈到服务器上</li></ol><h2 id="DES加密算法-Hot-None"><a href="#DES加密算法-Hot-None" class="headerlink" title="DES加密算法(Hot)(None)"></a>DES加密算法(Hot)(None)</h2><p>做了5年的软考题，DES加密算法可以说是必考题了，每年都考。</p><h2 id="卫星通信中的差错控制"><a href="#卫星通信中的差错控制" class="headerlink" title="卫星通信中的差错控制"></a>卫星通信中的差错控制</h2><ol><li>选择重传ARQ</li><li>前项差错控制FEC</li><li>多站分集的自动反馈重发</li></ol>]]></content>
-    
-    
-      
-      
-    <summary type="html">&lt;p&gt;前天考完软考-网络攻城狮，写一下笔记趴✌🙌&lt;br&gt;随便记录一下，写的不算好，单纯只是做个笔记以后复习用(自己能看懂就行)&lt;/p&gt;
-&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;互</summary>
-      
-    
-    
-    
-    <category term="学了些什么" scheme="https://blog.farmer233.top/categories/%E5%AD%A6%E4%BA%86%E4%BA%9B%E4%BB%80%E4%B9%88/"/>
-    
-    
-    <category term="笔记" scheme="https://blog.farmer233.top/tags/%E7%AC%94%E8%AE%B0/"/>
-    
-    <category term="计算机网络基础" scheme="https://blog.farmer233.top/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/"/>
     
   </entry>
   
