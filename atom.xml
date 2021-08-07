@@ -6,7 +6,7 @@
   <link href="https://blog.farmer233.top/atom.xml" rel="self"/>
   
   <link href="https://blog.farmer233.top/"/>
-  <updated>2021-08-06T18:55:16.816Z</updated>
+  <updated>2021-08-07T04:14:53.440Z</updated>
   <id>https://blog.farmer233.top/</id>
   
   <author>
@@ -21,15 +21,14 @@
     <link href="https://blog.farmer233.top/2021/08/07/%E6%8F%90%E9%97%AE%E4%B8%AD%E9%9C%80%E8%A6%81%E9%81%BF%E5%85%8D%E7%9A%84%E4%B8%80%E4%BA%9B%E8%A1%8C%E4%B8%BA/"/>
     <id>https://blog.farmer233.top/2021/08/07/%E6%8F%90%E9%97%AE%E4%B8%AD%E9%9C%80%E8%A6%81%E9%81%BF%E5%85%8D%E7%9A%84%E4%B8%80%E4%BA%9B%E8%A1%8C%E4%B8%BA/</id>
     <published>2021-08-06T18:10:23.000Z</published>
-    <updated>2021-08-06T18:55:16.816Z</updated>
+    <updated>2021-08-07T04:14:53.440Z</updated>
     
-    <content type="html"><![CDATA[<blockquote><p>本文灵感源于F大的这篇文章–<a href="https://frostming.com/2019/12-26/qa-no-action/" target="_blank" rel="noopener">社区问答中需要避免的行为</a><br>长年混迹于QQ群、微信群和各大论坛，给人的印象和态度都属于是态度不友好类型。这并不是因为我鄙视菜鸟，我也曾是菜鸟（现在也是）。我这么做的原因也是我希望<strong>提问者能自己意识到问题所在</strong> -&gt; 为什么错了？应该怎么解决？这比我直接告诉他一个答案有帮助得多。逛社区这么久，我发现很多问题都提问的不是很好，不吐不快。<br>ps: 除了提问者应该学会提问外，回答者也有不好的回答。</p></blockquote><h2 id="How-To-Ask-Questions"><a href="#How-To-Ask-Questions" class="headerlink" title="How To Ask Questions"></a>How To Ask Questions</h2><p>这个问题已经是听得耳朵起茧了，故不再赘述。但必须强调的是问问题是一门高深的学问，问的好不好直接影响到你是否能得到高效、直接、有效的回答。<br><strong>关于提问总结出有一下两个比较主要的问题：</strong></p><ol><li>不会提问</li><li>X-Y问题</li></ol><p>如果不会提问，<strong>一定要阅读下面的链接</strong>：</p><ul><li><a href="https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md" target="_blank" rel="noopener">提问的智慧</a></li><li><a href="https://coolshell.cn/articles/10804.html" target="_blank" rel="noopener">X-Y问题</a></li></ul><h3 id="X-Y问题"><a href="#X-Y问题" class="headerlink" title="X-Y问题"></a>X-Y问题</h3><p>相比于不会提问，更让人恼火的是<code>X-Y问题</code>。概况起来如下：</p><ol><li>提问者想解决问题X</li><li>然后觉得Y可能是解决X问题的方法</li><li>但他不知道Y应该怎么做</li><li>于是他去问别人Y应该怎么做</li></ol><p>于是很多人都会热心的告诉这个人Y应该怎么处理，但大家都觉得Y这个方案比较怪异。经过大量的讨论浪费了大量的实践后人们终于明白了原始问题X，于是发现Y根本就不是用来解决X最合适的方案。<br>这个问题最大的问题在于：<strong>在一个根本错误的方向上浪费他人大量的时间和精力！！！</strong>十分的让人高血压！<br>关于X-Y问题，有许多的变种。不能说他们没有自己尝试动手解决问题，但这样的问题往往更浪费时间。</p><h2 id="用XXX干嘛，为什么不用XXX"><a href="#用XXX干嘛，为什么不用XXX" class="headerlink" title="用XXX干嘛，为什么不用XXX"></a>用XXX干嘛，为什么不用XXX</h2><blockquote><p>Q: 用Flask怎么做XXX？<br>A: 用Django吧</p></blockquote><p>某小白终于鼓起勇气，开始学某一框架，碰到了瓶颈，结果上来一提问，被安利了另一个框架，好嘛，白学了。这也很不负责任，我觉得要说服人用一个新的框架，接触新的知识，你得对两者都有相当的熟悉度，并且清楚两者的优劣。<br>如果你只是对其中一个比较熟悉，或者你确信已有方案确实做不到，或者要付出极大的代价才能实现，我会尽量沿用提问者已选择的方案。</p>]]></content>
+    <content type="html"><![CDATA[<img src="/2021/08/07/%E6%8F%90%E9%97%AE%E4%B8%AD%E9%9C%80%E8%A6%81%E9%81%BF%E5%85%8D%E7%9A%84%E4%B8%80%E4%BA%9B%E8%A1%8C%E4%B8%BA/question.jpg" class="" title="img"><blockquote><p>本文灵感源于F大的这篇文章–<a href="https://frostming.com/2019/12-26/qa-no-action/" target="_blank" rel="noopener">社区问答中需要避免的行为</a>  </p></blockquote><p>长年混迹于QQ群、微信群和各大论坛，给人的印象和态度都属于是态度不友好类型。这并不是因为我鄙视菜鸟，我也曾是菜鸟（现在也是）。我这么做的原因也是我希望<strong>提问者能自己意识到问题所在</strong> -&gt; 为什么错了？应该怎么解决？这比我直接告诉他一个答案有帮助得多。逛社区这么久，我发现很多问题都提问的不是很好，不吐不快。<br>ps: 除了提问者应该学会提问外，回答者也有不好的回答。</p><h2 id="How-To-Ask-Questions"><a href="#How-To-Ask-Questions" class="headerlink" title="How To Ask Questions"></a>How To Ask Questions</h2><p>这个问题已经是听得耳朵起茧了，故不再赘述。但必须强调的是问问题是一门高深的学问，问的好不好直接影响到你是否能得到高效、直接、有效的回答。<br><strong>关于提问总结出有一下两个比较主要的问题：</strong></p><ol><li>不会提问</li><li>X-Y问题</li></ol><p>如果不会提问，<strong>一定要阅读下面的链接</strong>：</p><ul><li><a href="https://github.com/ryanhanwu/How-To-Ask-Questions-The-Smart-Way/blob/main/README-zh_CN.md" target="_blank" rel="noopener">提问的智慧</a></li><li><a href="https://coolshell.cn/articles/10804.html" target="_blank" rel="noopener">X-Y问题</a></li></ul><h3 id="X-Y问题"><a href="#X-Y问题" class="headerlink" title="X-Y问题"></a>X-Y问题</h3><p>相比于不会提问，更让人恼火的是<code>X-Y问题</code>。概况起来如下：</p><ol><li>提问者想解决问题X</li><li>然后觉得Y可能是解决X问题的方法</li><li>但他不知道Y应该怎么做</li><li>于是他去问别人Y应该怎么做</li></ol><p>于是很多人都会热心的告诉这个人Y应该怎么处理，但大家都觉得Y这个方案比较怪异。经过大量的讨论浪费了大量的实践后人们终于明白了原始问题X，于是发现Y根本就不是用来解决X最合适的方案。<br>这个问题最大的问题在于：<strong>在一个根本错误的方向上浪费他人大量的时间和精力！！！</strong>十分的让人高血压！<br>关于X-Y问题，有许多的变种。不能说他们没有自己尝试动手解决问题，但这样的问题往往更浪费时间。</p><h2 id="用XXX干嘛，为什么不用XXX"><a href="#用XXX干嘛，为什么不用XXX" class="headerlink" title="用XXX干嘛，为什么不用XXX"></a>用XXX干嘛，为什么不用XXX</h2><blockquote><p>Q: 用Flask怎么做XXX？<br>A: 用Django吧</p></blockquote><p>某小白终于鼓起勇气，开始学某一框架，碰到了瓶颈，结果上来一提问，被安利了另一个框架，好嘛，白学了。这也很不负责任，我觉得要说服人用一个新的框架，接触新的知识，你得对两者都有相当的熟悉度，并且清楚两者的优劣。<br>如果你只是对其中一个比较熟悉，除非你确信已有方案确实做不到，或者要付出极大的代价才能实现，否则我会尽量沿用提问者已选择的方案。</p>]]></content>
     
     
       
       
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;本文灵感源于F大的这篇文章–&lt;a href=&quot;https://frostming.com/2019/12-26/qa-no-action/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;社区问答中需要避免的行为&lt;/a&gt;&lt;br&gt;长年</summary>
+    <summary type="html">&lt;img src=&quot;/2021/08/07/%E6%8F%90%E9%97%AE%E4%B8%AD%E9%9C%80%E8%A6%81%E9%81%BF%E5%85%8D%E7%9A%84%E4%B8%80%E4%BA%9B%E8%A1%8C%E4%B8%BA/question.</summary>
       
     
     
