@@ -20,8 +20,8 @@ html.dataset.dark = localStorage.dark;
 <blockquote>
 <p>前言: 由于本人是根据<a href="https://helloflask.com/book/1/" target="_blank" rel="noopener">《Flask Web 开发实战 》</a>一书进行总结、扩展、引申。因此可能存在重复内容，但已取得本书作者许可😀<br>另外本文提及的APIFlask框架也是本书的作者写的, 十分建议购买阅读<br>本文项目对应地存储库: <a href="https://github.com/Farmer-chong/HelloAPIFlask" target="_blank" rel="noopener">https://github.com/Farmer-chong/HelloAPIFlask</a></p>
 </blockquote>
-<p>最近正值毕业阶段，相信许多人的毕业设计都无不例外的选择了Web相关的内容，毕竟这个比较容易实现。我发现许多人都出于从众心理无不例外的使用了Spring全家桶，Spring有着很庞大的生态、久远的历史以及很丰富的社区资料，这使得他被许多从业者使用。但也正式这些优势导致它对新手或者快速上手开发变得十分不好，再加之国内的毒瘤技术社区等原因，使得一个小问题往往需要花费大量的时间来排除错误的答案。</p>
-<p>相比于繁重、学习成本较高的Spring，Flask其简单的语法可以是我们快速的上手完成(应对)毕设这一类学业任务, 因此本文仅停留在 <strong>能用</strong> 阶段, 更多底层原理需要读者自行了解(这里推荐一下李大的狗书<a href="https://helloflask.com/book/1/" target="_blank" rel="noopener">《Flask Web 开发实战 》</a>) 另外出于为社区做贡献等情怀原因也是写这一些列的初衷。</p>
+<p>最近正值毕业阶段，相信许多人的毕业设计都无不例外的选择了Web相关的内容，毕竟这个比较容易实现。我发现许多人都出于从众心理无不例外的使用了Spring全家桶，Spring有着很庞大的生态、久远的历史以及很丰富的社区资料，这使得它被许多从业者使用。但也正是这些优势导致它对新手或者快速上手开发变得十分不好，再加之国内的毒瘤技术社区等原因，使得一个小问题往往需要花费大量的时间来排除错误的答案。</p>
+<p>相比于繁重、学习成本较高的Spring，Flask其简单的语法可以是我们快速的上手完成(应对)毕设这一类学业任务, 因此本文仅停留在 <strong>能用</strong> 阶段, 更多底层原理需要读者自行了解(这里推荐一下李大的狗书<a href="https://helloflask.com/book/1/" target="_blank" rel="noopener">《Flask Web 开发实战 》</a>) 另外出于为社区做贡献等情怀原因也是写这一系列的初衷。</p>
 <h2 id="系列文章"><a href="#系列文章" class="headerlink" title="系列文章"></a>系列文章</h2><ol>
 <li><a href="./">后端系列: 基本简介与Hello APIFlask! (一)</a><!-- 2.  -->
 
@@ -131,7 +131,7 @@ html.dataset.dark = localStorage.dark;
 <p>安装<strong>python-dotenv</strong>包命令如下:</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install python-dotenv # Linux环境用pip3</span><br></pre></td></tr></table></figure>
 
-<p>除了管理自动发现程序实例外，我们还可以用来管理程序需要的环境变量。我们在项目根目录下分别创建两个文件:<code>.env</code>和<code>.flaskenv</code>，其中<code>.flaskenv</code>同来管理和<strong>Flask</strong>相关的公开环境变量。而<code>.env</code>文件则用来管理包含敏感信息的环境变量。</p>
+<p>除了管理自动发现程序实例外，我们还可以用来管理程序需要的环境变量。我们在项目根目录下分别创建两个文件:<code>.env</code>和<code>.flaskenv</code>，其中<code>.flaskenv</code>用来管理和<strong>Flask</strong>相关的公开环境变量。而<code>.env</code>文件则用来管理包含敏感信息的环境变量。</p>
 <blockquote>
 <p><code>.env</code>包含敏感信息，除非是私有项目，否则绝对不能提交到Git仓库中</p>
 </blockquote>
