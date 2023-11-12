@@ -1,0 +1,151 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>MySQL的存储与索引(InnoDB) | Farmer</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?' + 'b9d3811fb8d19b04438737cb71b15c9e';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><div class="darkmode-toggle">🌓</div><script>var prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)');
+var toggle = document.querySelector('.darkmode-toggle');
+var html = document.querySelector('html');
+
+html.dataset.dark = localStorage.dark || prefersDarkMode.matches;
+
+toggle.addEventListener('click', () => {
+localStorage.dark = !(html.dataset.dark == 'true');
+html.dataset.dark = localStorage.dark;
+});</script><meta name="generator" content="Hexo 6.2.0"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">MySQL的存储与索引(InnoDB)</h1><a id="logo" href="/.">Farmer</a><p class="description">-Farmer的自习室</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/readings/"><i class="fa fa-bookmark"> 阅读清单</i></a><a href="/now/"><i class="fa fa-calendar"> Now</i></a><a href="/history/"><i class="fa fa-book"> 历史</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">MySQL的存储与索引(InnoDB)</h1><div class="post-meta">2023-09-27<span> | </span><span class="category"><a href="/categories/MySQL/">MySQL</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 3.8k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-clock-o"></i><span class="post-count"> 13</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E8%A1%8C%E8%AE%B0%E5%BD%95%E7%9A%84%E5%AD%98%E5%82%A8%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.</span> <span class="toc-text">一行记录的存储格式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#InnoDB%E6%95%B0%E6%8D%AE%E9%A1%B5"><span class="toc-number">2.</span> <span class="toc-text">InnoDB数据页</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%B5%E7%9B%AE%E5%BD%95%EF%BC%88%E6%A7%BD%EF%BC%89"><span class="toc-number">2.1.</span> <span class="toc-text">页目录（槽）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8%E6%95%B0%E6%8D%AE%E9%A1%B5%E4%B8%AD%E5%AE%9A%E4%BD%8D%E8%AE%B0%E5%BD%95"><span class="toc-number">2.2.</span> <span class="toc-text">在数据页中定位记录</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#B-%E6%A0%91%E7%B4%A2%E5%BC%95"><span class="toc-number">3.</span> <span class="toc-text">B+树索引</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E7%BA%A7%E7%B4%A2%E5%BC%95%E4%B8%8E%E8%81%94%E5%90%88%E7%B4%A2%E5%BC%95"><span class="toc-number">3.1.</span> <span class="toc-text">二级索引与联合索引</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="post-content"><p>MySQL 是当下一款主流的关系型数据库，它所有的数据均以磁盘文件的方式存储。在日常开发中我们都会听到许多为了加快 SQL 查询的效率而添加索引，同时许多文档也都会告诉我们要添加太多的索引， 索引不要太长， 使用数字或者空字符串来代替 NULL 等等的许多建议。那么为什么会有这些建议？这些建议又是否正确？这些答案都能从MySQL数据的物理存储方式中找到。</p>
+<h2 id="一行记录的存储格式"><a href="#一行记录的存储格式" class="headerlink" title="一行记录的存储格式"></a>一行记录的存储格式</h2><p>我们执行 SQl 的时候，查询的结果是一行行的格式返回的.因此在讲解索引、数据页前我们先来看一下 MySQL 中一行记录是怎么存储的：</p>
+<img src="/2023/09/27/MySQL%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%B4%A2%E5%BC%95/record.png" class="" title="一行记录的存储格式">
+
+<p>在上图中我们可以看到,一条完整的记录分为「记录头」与「真实数据」两部份，下面展开看看记录头的部份：</p>
+<!-- **1. 变长字段长度**
+我们知道 MySQL 支持一些变长的数据类型，比如 TEXT、VARCHAR 等等。这些类型的字段存储多少字节的数据是不固定的，所以我们在存储数据的时候把长度记录下来，
+这样后续读取的时候才知道读哪些内容
+
+**2. NULL 值列表**
+在一条记录中某些列是可以存放 NULL 值的，如果把这些 NULL 值都放到真实数据部份中存储会很占地方，所以我们把 NULL 的列统一管理起来 -->
+
+<p><strong>1. 记录头信息</strong><br>我们知道 MySQL 支持一些变长的数据类型与NULL值，比如 TEXT、VARCHAR 等等。这些类型的字段存储多少字节的数据是不固定的，所以我们在存储数据的时候把对应信息存储下来方便后续读取。因为该部份对本文影响不大，因此没有展开。</p>
+<p><strong>2. next_record 字段</strong><br>在记录头中这个显眼的「next_record」字段相信已经引起了你的注意，正如其字面意思，该字段表示的是当前记录与一下条记录的<strong>偏移量</strong>。换一个说法就是，该字段是一个<strong>指向下一条记录的指针</strong>。</p>
+<p>所以我们可以看到，在 InnoDB 中所有的数据就是通过该字段串起来成了一个单链表。而 MySQL 优化手段也是基于此进行改造的。</p>
+<blockquote>
+<p>上图是我经过简化后的示意图，我把一些与本篇无关的内容隐藏掉了，仅保留了比较关键的内容</p>
+</blockquote>
+<h2 id="InnoDB数据页"><a href="#InnoDB数据页" class="headerlink" title="InnoDB数据页"></a>InnoDB数据页</h2><p>页是 InnoDB 管理存储空间的基本单位，一个页的大小一般是 16k。数据页中则存放着我们上面提到的一行行记录，现在我们知道记录之间是通过 <code>next_record</code> 字段串联形成一个单向链表。那么在一个数据页中要查找某条记录该怎么办呢？</p>
+<p>最笨的办法是从第一条记录开始遍历一遍链表，那么第一条记录我们怎么知道是哪条呢？以及当数据很多时，遍历一遍的时间也是无法忽视的，MySQL是怎么优化的？下面我们来看一下 MySQL 中数据页的格式，如下图：</p>
+<img src="/2023/09/27/MySQL%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%B4%A2%E5%BC%95/page.png" class="" title="数据页格式">
+
+<p>在上图中我们可以看到一个数据页中关键的几个东西：</p>
+<ol>
+<li>页号：页号是唯一的，如同身份证号码一样，InnoDB 通过页号来唯一定位一个页</li>
+<li>最小记录&#x2F;最大记录：页面中的最小记录和最大记录，用于指向真实数据记录，相当于真实记录链表的头尾哨兵</li>
+<li>槽（slot）：页目录，用于快速定位页面中的记录，加速查找过程（通过二分查找）。<ol>
+<li>将所有正常的记录（包括最大&#x2F;最小记录）划分为几个组，一个组对应槽中的一位（对应图中黄色范围）</li>
+<li>每组记录的最后一条记录中的记录头中会有一个 <code>n_owned</code> 属性表示该组内共有几条记录</li>
+<li>将每个组中最后一条记录在页面中的偏移量单独提取出来（就是槽中的每一位均指向每组记录中最大的那条记录）</li>
+</ol>
+</li>
+</ol>
+<h3 id="页目录（槽）"><a href="#页目录（槽）" class="headerlink" title="页目录（槽）"></a>页目录（槽）</h3><p>比如现在图中有5条记录，InnoDB 会把他们分成2个组，第一组只有一个「最小记录」（也就是头哨兵），第二组则是剩余的4条记录，一共两个组。因此对应着2个槽，每个槽中存放每个组中最大的那条记录在页面中的地址偏移量（即指向最大记录的指针）。每个分组中的记录条数都有规定，规定如下：</p>
+<ol>
+<li>最小记录（头哨兵）所在的分组只能有一条记录</li>
+<li>最大记录（尾哨兵）所在的分组拥有的记录数只能在1～8条之间</li>
+<li>剩余的分组中记录的条数范围为4～8条之间</li>
+</ol>
+<p>所以初始情况下只有最小&#x2F;大记录，因此页目录（槽）中只有两个组。之后每插入一条记录，都会从页目录上找到对应记录的主键值比准备插入的主键值大，且差值最小（为了让主键顺序排列-从小到大）的槽，然后把该槽的 <code>n_owned</code> 值加一，表示添加了一条记录，直到该组记录中的记录数等于8个。8个后再插入则不满足第二条规则，因此会产生新的一个组，并将原有记录进行迁移，使得满足三条规则。</p>
+<h3 id="在数据页中定位记录"><a href="#在数据页中定位记录" class="headerlink" title="在数据页中定位记录"></a>在数据页中定位记录</h3><p>当前页面中记录太少，不好演示页目录如何加快查找速度的，为此我们往页面添加几条记录，添加后的数据页如下（为了清晰的展示槽与组之间的关系，我将记录之间的指针隐藏了，详细看上一张图片）：</p>
+<img src="/2023/09/27/MySQL%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%B4%A2%E5%BC%95/page_more_data.png" class="" title="更多数据的数据页">
+
+<p>因为记录的主键都是从小到大排列的，所以我们可以使用二分法快速查找记录，如图中所示一共有5个槽，接下来我们模拟一下在该表中找到「记录6」的过程：</p>
+<ol>
+<li>根据槽的信息，可以得到最低的槽 low &#x3D; 0，最高的槽 high&#x3D;4（也就是二分查找的初始边界）</li>
+<li>计算中间槽的位置：(0+4)&#x2F;2 &#x3D; 2，查看槽2对应记录为8，又因为 8 &gt; 6，所以设置 high&#x3D;2, low 保持不变</li>
+<li>重新计算中间槽的位置：(0+2)&#x2F;2 &#x3D; 1，查看槽1对应组最大记录的主键值为4；又因为 4 &lt; 6,所以设置 low&#x3D;1, high 保持不变</li>
+<li>因为 high-low &#x3D; 1，所以确定主键值为6的记录在槽2对应的组中</li>
+<li>此时我们只需从槽1的最大记录开始遍历每条记录（也就是从槽2的开头遍历），便能很快找到「记录6」了。</li>
+</ol>
+<p>上面我们已经介绍过，每个组中包含的记录条数最多是8条，所以遍历一个组中的记录代价是很小的。因此我们可以将上面的步骤再提炼一下，总结成在一个数据页中查找元素的步骤：</p>
+<ol>
+<li>在页目录中通过二分法确认记录所在的槽</li>
+<li>通过记录的 <code>next_record</code> 属性遍历该槽所在的组中的各个记录</li>
+</ol>
+<p>至此，我们已经知道了如何在数据页中快速查找到一条记录，而将这一个个数据页连接起来便能是我们存储的所有数据了。那么如何才能高效的在这么多数据页中查找记录，接下来就轮到“索引同志”登场了。</p>
+<h2 id="B-树索引"><a href="#B-树索引" class="headerlink" title="B+树索引"></a>B+树索引</h2><p>我们知道一个数据页的大小是 16K，而我们业务中一个表的数据动辄就上G，显然一个数据页是无法装下我们的数据的。那么在一个表中的数据页是怎么链接起来的？我们回到查询一条记录的语句上，要在这么多数据页中找到一条记录，最笨的方法便是遍历所有的数据页，那么为什么要遍历所有的数据页呢？我们不能有个聪明点的方法吗？原因是因为数据页之间是没有规律的，我们并不知道搜索调节会匹配哪些页的记录（因为没有规律，所有的数据页都有可能存在），因此不得不遍历所有数据页。</p>
+<p>那么如何快速定位到记录在哪些数据页中？我们还记得在数据页里面为了快速定位一条记录，我们为页中的数据划分了组，并且为此建立了一个页目录（槽）。同样的我们也可以想办法为了「<strong>快速定位记录所在的页</strong>」而建立一个目录，在建立这个目录的过程中需要满足这几个条件（页与页之间的规定）：</p>
+<ol>
+<li>下一个数据页中「真实记录」的主键值必须大于上一个页中「真实记录」的主键值（叶子节点）</li>
+<li>数据页之间通过前后指针相连</li>
+<li>给所有页建立一个目录项（内节点）</li>
+</ol>
+<p>为此我们得到了一个简易版的索引方案，如下图：</p>
+<img src="/2023/09/27/MySQL%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%B4%A2%E5%BC%95/simple_index.png" class="" title="简易索引">
+
+<p>为什么说这是简易版的索引呢？因为我们这么做的前提是假设了目录项是有连续的存储空间的，但实际并非如此，因此会引起下面的几个问题：</p>
+<ol>
+<li>InnoDB 使用页作为管理存储空间的基本单位，也就是只能保证16KB的连续存储空间</li>
+<li>我们经常会对记录做增、删、改的操作，如果某个页中最后一条记录删除会导致该页被移除，为了紧凑设计会导致目录项中该页后面的所有记录都需要往前挪动</li>
+</ol>
+<p>为此我们需要一种更灵活的方式来管理目录项，我们不难发现目录项与「真实记录」长的很像，只不过目录项中的两个列是主键与页号而已，为此我们可以复用存储用户记录的数据页来存储目录项，我们把这些用来表示目录项的记录称为<strong>目录项记录</strong></p>
+<p>那么我们把前面简易版本的索引方案修改后，便能得到下图所示的结构：</p>
+<img src="/2023/09/27/MySQL%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%B4%A2%E5%BC%95/index.png" class="" title="索引结构">
+
+<p>以查找记录9为例子，我们来看看是如何通过目录项加快查询速度的：</p>
+<ol>
+<li>先到目录项记录所在的页（也就是页10）中通过二分法快速定位到对应的目录项记录，因为 1&lt; 9 &lt; 2，所以定位到对应的「真实记录」所在的页为页21</li>
+<li>再到存储用户记录的页21中根据二分法快速定位到「记录9」</li>
+</ol>
+<p>虽然说目录页中只存放主键值与页号，比用户记录所需要的空间要小很多，但因为一个页只有16K大小，因此能存放的目录项也是有限的。如果表中的数据太多了导致目录页存放不下，那么便会重新分配一个目录页。目录页与目录页之间也通过上述的办法进行复用（利用目录页定位目录页），从而减少单次二分查找的数量，提高效率。在插入很多数据后，整个结构便像下图一样：</p>
+<img src="/2023/09/27/MySQL%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%B4%A2%E5%BC%95/index_full.png" class="" title="B+树">
+
+<p>上图所示的便是许多文章中提到的 <strong>B+树</strong> 了，无论是存放用户记录的数据页，还是存放目录项的数据页，我们都把它们存放到B+树这个数据结构中。从上图中我们也可以看出，我们的<strong>「真实记录」其实都存放在B+树最底层的节点上</strong>（叶子节点）。其余用来存放目录项的节点为非叶子节点或内节点。</p>
+<p>我们来简单的计算一下，假设<strong>叶子节点</strong>所代表的数据页可以存放 100 条用户记录，而<strong>内节点</strong>可以存放1000条记录，那么：</p>
+<ol>
+<li>如果该树有2层，则最多能存放 1000 x 100 &#x3D; 100000 条用户记录</li>
+<li>如果该树有3层，最多能存放 1000 x 1000 x 100 &#x3D; 100,000,000 条用户记录</li>
+<li>如果有4层，最多能存放 1000 x 1000 x 1000 x 100 &#x3D; 100,000,000,000 条记录</li>
+</ol>
+<p>所以在一般情况下，我们用到的B+树都不会超过3层。这样一来在通过主键去查找某条记录时，最多只需要进行4个页面内的查找（3个目录页与一个真实记录的页），又因为每个页中有<strong>页目录</strong>（槽），所以在页面内可以通过二分查找快速定位记录。因此我们可以看到这就是使用B+树查询高效的原因。</p>
+<blockquote>
+<p>这种根据主键ID构建的B+树，我们称为「<strong>聚簇索引</strong>」，这也引申出来了 InnoDB 中所谓的“索引即数据，数据即索引”。</p>
+</blockquote>
+<p>我们可以看到这里只有 ID 作为索引列，但我们平时使用的过程中还可以为其他列建立的索引，因此这就引申出<strong>二级索引</strong>与<strong>联合索引</strong>了。</p>
+<h3 id="二级索引与联合索引"><a href="#二级索引与联合索引" class="headerlink" title="二级索引与联合索引"></a>二级索引与联合索引</h3><p>无论是二级索引亦或是联合索引，其实都是基于上面提到的聚簇索引而引申出来的。我们先来看看二级索引与聚簇索引的区别：</p>
+<ol>
+<li>聚簇索引是根据主键进行排序的，而我们刚刚提到无论是页面内还是页面之间都强调了一个<strong>有序（从小到大）</strong>的特性。因此二级索引也是需要进行排序的，但二级索引是根据<strong>索引列</strong>进行排序，排序的规则则是根据设置的字符集来排序</li>
+<li>二级索引的叶子节点中只存放「索引列」与主键值，因此如果需要获取完整的记录，需要根据主键值到聚簇索引中查询（这个操作也叫回表）</li>
+</ol>
+<p>二级索引如下图所示：</p>
+<img src="/2023/09/27/MySQL%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%B4%A2%E5%BC%95/sec_index.png" class="" title="二级索引">
+
+<p>我们除了可以使用某一列进行索引外，还可以同时为多个列建立索引，而多个列建立的索引则称为「<strong>联合索引</strong>」。许多文章都会提到<strong>最左匹配</strong>等概念，而这也是与我们联合索引的结构息息相关的，比如我们想让B+树按照A和B列的大小进行排序，这里面就包含了两层含义：</p>
+<ol>
+<li>先把各个记录和页按照A列进行排序（因为A在前面）</li>
+<li>在A列相同的情况下，再根据B列进行排序</li>
+</ol>
+<p>该索引如下图所示：</p>
+<img src="/2023/09/27/MySQL%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%B4%A2%E5%BC%95/cover_index.png" class="" title="联合索引">
+
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>在创建和使用索引时应该注意以下事项：</p>
+<ol>
+<li>只为用于搜索、排序或分组的列创建索引</li>
+<li>当列中不重复值的个数在总记录数中占比很大时，才值得建立索引</li>
+<li>索引列的类型要尽可能的小</li>
+<li>可以只为索引列创建前缀索引，减少索引占用的空间</li>
+<li>尽量覆盖索引进行查询，避免出现回表</li>
+<li>为了减少让<strong>聚簇索引</strong>出现页分裂的情况，主键最好要自增</li>
+</ol>
+<!-- 
+本文简单粗略的介绍了 MySQL 数据库中 InnoDB 存储引擎的存储与索引结构，对该部份掌握的深浅决定了写出来的 SQL 是否高效、合理。这一年多的工作中可以说天天和 MySQL 打交道，在解决了几个线上慢SQL告警后才意思到要好好补补这方面的知识，希望这篇笔记能让大家对 InnoDB 的存储与索引有一个更清晰的认知吧🚀 -->
+
+</div><div id="donate"><link rel="stylesheet" type="text/css" href="/css/donate.css?v=1.0.0"><script type="text/javascript" src="/js/donate.js?v=1.0.0" successtext="复制成功！"></script><a class="pos-f tr3" id="github" href="https://github.com/farmerChillax" target="_blank" title="Github"></a><div id="DonateText">Donate</div><ul class="list pos-f" id="donateBox"><li id="AliPay" qr="/img/AliPayQR.jpg"></li><li id="WeChat" qr="/img/WeChatQR.jpg"></li></ul><div class="pos-f left-100" id="QRBox"><div id="MainBox"></div></div></div><script type="text/javascript" src="/js/share.js?v=1.0.0" async></script><a class="article-share-link" data-url="https://blog.farmer233.top/2023/09/27/MySQL%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%B4%A2%E5%BC%95/" data-id="clovr75eo001cbn32hr599vxq" data-qrcode="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPYAAAD2CAAAAADAeSUUAAADL0lEQVR42u3ay47iMBAFUP7/pxlpVi2NBu4tm1ZijlcIQpxjFkU9Ho94Pf+uf1//fOfnyj/Nd39958cnFjY2NvZN2M+XK9n4f9ck33p9NO1TJRZsbGzsU9lJ0EoCRv5pvm9+TXI9NjY29jez28Qjf3+W/GBjY2Njf4K9nt60PGxsbGzs/BHz8n1S+kl2n+27uZaGjY2NfXn2SqP3aq9/qb+NjY2NfRn2s1yfKCrlAzp5k/iNAhsbG/sgdjIus6uVO0tFksRmeIjY2NjYh7LbkJCXlvLglx9ovuOGihQ2Njb25dn5oEwyQLNeuM+PrD1cbGxs7O9hr//1nyU2eZO4DcbY2NjYZ7OTcJK3DfLEIA+KeciMjh4bGxv7CHYbYIrwMGoJtKWu4fgONjY29kHs/FBmgzVt0zd/9FnYw8bGxj6b3f6hT0LL3kGftoBVNAmwsbGxb8teGaDJw95sl7wtUSct2NjY2Aex29CVpxmz4Z62ObGSSmFjY2OfwZ4lG3tHcOpfKTiIN8+JjY2NfRx71tZt2VF6sJX932uwsbGxD2K3LdKV0v+w9BO3E4ZDPNjY2NgHsdvHzUdn8oZufvSz+2NjY2OfzW4HZdoA04bJPF3Z0CrAxsbGPoKdl2PaT/Pw01bvk12KMIaNjY19Q3Zb6EmCyqwg1RaJZgeNjY2NfR57pUwze6BZgvGJFgI2Njb2GeyVVmsbhPIBnVlIK4Z1sLGxsQ9iz0Zq2iJR2yRIjm9WhMLGxsY+lT1r0LbDOm2btm0zLI11YmNjY9+cXZTUy8Qjge0a/akDLTY2NvYR7FlRaaWIv1JUWrnPhloaNjY29uXZSWt2PRX5naMpuiLY2NjYN2fnpZw8LcmTkDzNeIxWXUvDxsbGviH7Wa6VAZr14LTSDHiTgWFjY2Pflt0Gg/ZPfzsWubfItR4CsbGxse/CXnmgdtRmlti8fmdY5MLGxsY+jr0etHaN7OTDQCsFJmxsbOzvZOeBJL9bG+Ty0tWbZAYbGxv7i9l56WelVTD7bt6ixsbGxj6PvbdwvxfQpiLD6SRsbGzs27LbG7Xlm1nYy4dv8qOpjwAbGxv76uw/TePOSucs7o4AAAAASUVORK5CYII=">分享</a><div class="tags"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag">数据库</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E7%AC%94%E8%AE%B0/" rel="tag">笔记</a></li></ul></div><div class="post-nav"><a class="pre" href="/2023/10/13/%E3%80%8AOSTEP%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%BB%8B%E7%BB%8D/">《OSTEP》学习笔记（一）操作系统介绍</a><a class="next" href="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/">Go性能分析工具</a></div><div id="container"></div><link rel="stylesheet" type="text/css" href="//unpkg.com/gitalk/dist/gitalk.css"><script type="text/javascript" src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script><script type="text/javascript" src="//unpkg.com/gitalk/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+  clientID: '0a5a339e4c6a3cc81b76',
+  clientSecret: 'ce2b79ca94465b2a758faca9e0b95e4df38d6204',
+  repo: 'FarmerChillax.github.io',
+  owner: 'FarmerChillax',
+  admin: ['FarmerChillax'],
+  id: md5(location.pathname),
+  distractionFreeMode: false
+})
+gitalk.render('container')
+</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/MySQL/">MySQL</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%BA%86%E4%BA%9B%E4%BB%80%E4%B9%88/">学了些什么</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%90%9E%E4%BA%8B%E6%83%85/">搞事情</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%83%A1%E6%80%9D%E4%B9%B1%E8%AF%AD/">胡思乱语</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Golang/" style="font-size: 15px;">Golang</a> <a href="/tags/%E8%83%A1%E8%A8%80%E4%B9%B1%E8%AF%AD/" style="font-size: 15px;">胡言乱语</a> <a href="/tags/%E7%88%AC%E8%99%AB/" style="font-size: 15px;">爬虫</a> <a href="/tags/%E6%AD%A3%E6%96%B9%E6%95%99%E5%8A%A1%E7%B3%BB%E7%BB%9F/" style="font-size: 15px;">正方教务系统</a> <a href="/tags/nginx/" style="font-size: 15px;">nginx</a> <a href="/tags/python/" style="font-size: 15px;">python</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/" style="font-size: 15px;">计算机网络基础</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 15px;">笔记</a> <a href="/tags/CTF/" style="font-size: 15px;">CTF</a> <a href="/tags/JavaScript/" style="font-size: 15px;">JavaScript</a> <a href="/tags/C%E8%AF%AD%E8%A8%80/" style="font-size: 15px;">C语言</a> <a href="/tags/%E5%88%B7%E9%A2%98/" style="font-size: 15px;">刷题</a> <a href="/tags/PTA/" style="font-size: 15px;">PTA</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 15px;">前端</a> <a href="/tags/web/" style="font-size: 15px;">web</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 15px;">数据库</a> <a href="/tags/DDNS/" style="font-size: 15px;">DDNS</a> <a href="/tags/%E7%94%9F%E6%B4%BB%E8%AE%B0%E5%BD%95/" style="font-size: 15px;">生活记录</a> <a href="/tags/%E5%90%90%E6%A7%BD/" style="font-size: 15px;">吐槽</a> <a href="/tags/%E9%BB%91%E6%9A%97%E6%96%99%E7%90%86/" style="font-size: 15px;">黑暗料理</a> <a href="/tags/TypeScript/" style="font-size: 15px;">TypeScript</a> <a href="/tags/vs-code/" style="font-size: 15px;">vs code</a> <a href="/tags/%E6%8F%92%E4%BB%B6/" style="font-size: 15px;">插件</a> <a href="/tags/Flask-APIFlask/" style="font-size: 15px;">Flask/APIFlask</a> <a href="/tags/emotion/" style="font-size: 15px;">emotion</a> <a href="/tags/Rust/" style="font-size: 15px;">Rust</a> <a href="/tags/%E8%93%9D%E6%A1%A5%E6%9D%AF/" style="font-size: 15px;">蓝桥杯</a> <a href="/tags/%E7%AE%97%E6%B3%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 15px;">算法和数据结构</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 15px;">操作系统</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2023/10/13/%E3%80%8AOSTEP%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%BB%8B%E7%BB%8D/">《OSTEP》学习笔记（一）操作系统介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/09/27/MySQL%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%B4%A2%E5%BC%95/">MySQL的存储与索引(InnoDB)</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/">Go性能分析工具</a></li><li class="post-list-item"><a class="post-list-link" href="/2022/03/15/%E7%94%9F%EF%BC%8C%E6%B4%BB/">生，活</a></li><li class="post-list-item"><a class="post-list-link" href="/2022/03/09/%E6%89%8B%E6%8A%8A%E6%89%8B%E6%95%99%E4%BD%A0%E7%94%A8APIFlask%E5%81%9A%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E2%80%94%E2%80%94%E5%90%8E%E7%AB%AF/">手把手教你用APIFlask做毕业设计后端—基本简介与Hello APIFlask!(一)</a></li><li class="post-list-item"><a class="post-list-link" href="/2022/01/15/%E7%94%A8Rust%E4%B8%BAPython%E5%8A%A0%E5%8F%8C%E7%BF%85%E8%86%80/">用Rust为Python加双翅膀</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/12/08/%E7%A7%8B%E6%8B%9B%E6%9D%82%E8%B0%88/">校招杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/11/07/Review-of-life-in-university/">Review of life in university ✔</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/09/05/A-distributed-with-Go/">A distributed system with Go</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/09/03/%E6%96%B0%E7%89%88%E6%AD%A3%E6%96%B9%E6%95%99%E5%8A%A1%E7%B3%BB%E7%BB%9F%E7%99%BB%E5%BD%95%E5%AE%9E%E7%8E%B0/">新版正方教务系统登录实现</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="https://blog.xiaotao233.top/" title="咸鱼的窝" target="_blank">咸鱼的窝</a><ul></ul><a href="https://blog.diyxi.top/" title="DIY，熙!" target="_blank">DIY，熙!</a><ul></ul><a href="https://darkroom.vip/" title="Dark的小黑屋" target="_blank">Dark的小黑屋</a><ul></ul><a href="https://blog.ziki2333.top/" title="ziki" target="_blank">ziki</a><ul></ul><a href="https://blog.feldan.top/" title="feldan" target="_blank">feldan</a><ul></ul><a href="https://blog.xiaohao233.top/" title="Twacの自习室" target="_blank">Twacの自习室</a><ul></ul><a href="https://greyli.com/" title="Grey Li" target="_blank">Grey Li</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2023 <a href="/." rel="nofollow">Farmer.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>

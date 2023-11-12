@@ -1,0 +1,260 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content=""><title>Go性能分析工具 | Farmer</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0.0"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/normalize/latest/normalize.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/pure-min.min.css"><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/pure/latest/grids-responsive-min.min.css"><link rel="stylesheet" href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css"><script type="text/javascript" src="//lib.baomitu.com/jquery/latest/jquery.min.js"></script><link rel="icon" mask="" sizes="any" href="/favicon.ico"><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?' + 'b9d3811fb8d19b04438737cb71b15c9e';
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+  })();</script><script type="text/javascript" src="//lib.baomitu.com/clipboard.js/latest/clipboard.min.js"></script><script type="text/javascript" src="//lib.baomitu.com/toastr.js/latest/toastr.min.js"></script><link rel="stylesheet" href="//lib.baomitu.com/toastr.js/latest/toastr.min.css"><div class="darkmode-toggle">🌓</div><script>var prefersDarkMode = window.matchMedia('(prefers-color-scheme: dark)');
+var toggle = document.querySelector('.darkmode-toggle');
+var html = document.querySelector('html');
+
+html.dataset.dark = localStorage.dark || prefersDarkMode.matches;
+
+toggle.addEventListener('click', () => {
+localStorage.dark = !(html.dataset.dark == 'true');
+html.dataset.dark = localStorage.dark;
+});</script><meta name="generator" content="Hexo 6.2.0"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">Go性能分析工具</h1><a id="logo" href="/.">Farmer</a><p class="description">-Farmer的自习室</p></div><div id="nav-menu"><a class="current" href="/."><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/readings/"><i class="fa fa-bookmark"> 阅读清单</i></a><a href="/now/"><i class="fa fa-calendar"> Now</i></a><a href="/history/"><i class="fa fa-book"> 历史</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div class="pure-g" id="layout"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">Go性能分析工具</h1><div class="post-meta">2023-07-04<span> | </span><span class="category"><a href="/categories/%E5%AD%A6%E4%BA%86%E4%BA%9B%E4%BB%80%E4%B9%88/">学了些什么</a></span><script src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> 阅读</span></span><span class="post-time"><span class="post-meta-item-text"> | </span><span class="post-meta-item-icon"><i class="fa fa-keyboard-o"></i><span class="post-count"> 3.3k</span><span class="post-meta-item-text"> 字</span></span></span><span class="post-time"> | <span class="post-meta-item-icon"><i class="fa fa-clock-o"></i><span class="post-count"> 11</span><span class="post-meta-item-text"> 分钟</span></span></span></div><div class="clear"><div class="toc-article" id="toc"><div class="toc-title">文章目录</div><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">1.</span> <span class="toc-text">环境搭建</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BE%E5%BD%A2%E5%8C%96%E4%BE%9D%E8%B5%96%E5%AE%89%E8%A3%85"><span class="toc-number">1.1.</span> <span class="toc-text">图形化依赖安装</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E7%82%B8%E5%BC%B9-%F0%9F%92%A3"><span class="toc-number">1.2.</span> <span class="toc-text">获取炸弹 💣</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%87%E6%A0%87%E6%9F%A5%E7%9C%8B"><span class="toc-number">2.</span> <span class="toc-text">指标查看</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CPU-%E5%8D%A0%E7%94%A8%E8%BF%87%E9%AB%98"><span class="toc-number">3.</span> <span class="toc-text">CPU 占用过高</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%8D%A0%E7%94%A8%E8%BF%87%E9%AB%98%EF%BC%88Heap%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">内存占用过高（Heap）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%8F%E7%A8%8B%EF%BC%88Goroutine%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">协程（Goroutine）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Mutex%EF%BC%88%E9%94%81%EF%BC%89"><span class="toc-number">6.</span> <span class="toc-text">Mutex（锁）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Block%EF%BC%88%E9%98%BB%E5%A1%9E%EF%BC%89"><span class="toc-number">7.</span> <span class="toc-text">Block（阻塞）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9F%BA%E5%87%86%E6%AF%94%E5%AF%B9%E7%9A%84%E6%8E%92%E6%9F%A5%E6%96%B9%E5%BC%8F"><span class="toc-number">8.</span> <span class="toc-text">基准比对的排查方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">9.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Reference"><span class="toc-number">10.</span> <span class="toc-text">Reference</span></a></li></ol></div></div><div class="post-content"><!-- ## 前言 -->
+
+<p>对于 Golang 程序性能分析来说，pprof 一定是一个大杀器般的存在。主要可以分析 CPU、内存的使用情况、阻塞情况、Goroutine 的堆栈信息以及锁争用情况等性能问题。</p>
+<p>pprof 是一个性能分析工具，Go 在语言层面就内置了 profile 采样工具。这会涉及到 <code>runtime/pprof</code> 与 <code>net/http/pprof</code> 这两个包。但本文着重于使用 pprof 来分析问题，故不讲解采样相关内容。</p>
+<h2 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h2><p>以大家优秀的编码水平一般不会写出性能堪忧的程序，所以在此我们使用一个 GitHub 上开源的<a target="_blank" rel="noopener" href="https://github.com/FarmerChillax/go-pprof-practice">项目</a>，这个项目预埋了许多炸弹代码。这个性能堪忧的“炸弹”可以有效的帮助我们观测到程序的性能问题。</p>
+<blockquote>
+<p>务必确保你是在个人机器上运行“炸弹”的，能接受机器死机重启的后果（虽然这发生的概率很低）。请你务必不要在危险的边缘试探，比如在线上服务器运行这个程序。</p>
+</blockquote>
+<h3 id="图形化依赖安装"><a href="#图形化依赖安装" class="headerlink" title="图形化依赖安装"></a>图形化依赖安装</h3><p>pprof 默认提供命令行的方式来查看各项数据，但命令行的方式显然不够直观。因此我们安装一个图形化的依赖（<a target="_blank" rel="noopener" href="https://graphviz.gitlab.io/download/">graphviz</a>）来更直观的展示堆栈信息。</p>
+<p>你可以在<a target="_blank" rel="noopener" href="https://graphviz.gitlab.io/download/">官网</a>上寻找适合自己操作系统的安装方法，此外在下面这些系统上你可以通过包管理工具来安装它：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">brew install graphviz # macos</span><br><span class="line">apt install graphviz # ubuntu</span><br><span class="line">yum install graphviz # centos</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="获取炸弹-💣"><a href="#获取炸弹-💣" class="headerlink" title="获取炸弹 💣"></a>获取炸弹 💣</h3><p>该炸弹你可以通过 <code>git</code> 克隆下来，再按照一般的 Go 项目方式运行。为了演示的方便我这使用 <code>go get</code> 的方式展示，注意加上 <code>-d</code> 参数来避免自动安装：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">go get -d github.com/FarmerChillax/go-pprof-practice</span><br><span class="line">cd $GOPATH/src/github.com/FarmerChillax/go-pprof-practice</span><br></pre></td></tr></table></figure>
+
+<h2 id="指标查看"><a href="#指标查看" class="headerlink" title="指标查看"></a>指标查看</h2><p>保持程序的运行，然后打开浏览器访问 <code>http://127.0.0.1:6060/debug/pprof/</code>，可以看到如下页面：</p>
+<!-- ![pprof_web](./pprof_web.jpg) -->
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/pprof_web.jpg" class="" title="pprof web">
+
+
+<p>页面上展示了程序运行采样数据，分别有：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>allocs</td>
+<td>内存分配情况的采样信息</td>
+</tr>
+<tr>
+<td>blocks</td>
+<td>阻塞操作情况的采样信息</td>
+</tr>
+<tr>
+<td>cmdline</td>
+<td>显示程序启动命令及参数</td>
+</tr>
+<tr>
+<td>goroutine</td>
+<td>当前所有协程的堆栈信息</td>
+</tr>
+<tr>
+<td>heap</td>
+<td>堆上内存使用情况的采样信息</td>
+</tr>
+<tr>
+<td>mutex</td>
+<td>锁争用情况的采样信息</td>
+</tr>
+<tr>
+<td>profile</td>
+<td>CPU 占用情况的采样信息</td>
+</tr>
+<tr>
+<td>threadcreate</td>
+<td>系统线程创建情况的采样信息</td>
+</tr>
+<tr>
+<td>trace</td>
+<td>程序运行跟踪信息</td>
+</tr>
+</tbody></table>
+<p>由于直接阅读采样信息缺乏直观性，我们需要借助 <code>go tool pprof</code> 命令来排查问题，这个命令是 go 原生自带的，所以不用额外安装。</p>
+<h2 id="CPU-占用过高"><a href="#CPU-占用过高" class="headerlink" title="CPU 占用过高"></a>CPU 占用过高</h2><p>首先看一下 CPU 的运行情况，打开管理器可以看到此项目在我电脑上占用了 <code>63.3%</code> 的 CPU。</p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/cpu_pre.jpg" class="" title="cpu_pre">
+
+<p>这显然是有问题的，我们使用 <code>go tool pprof</code> 来采集 10 秒 CPU 数据排查下问题：</p>
+<p><code>go tool pprof &quot;http://localhost:6060/debug/pprof/profile?seconds=10&quot;</code></p>
+<blockquote>
+<p>因为我们这里采集的是 profile 类型，因此需要等待一定的时间来对 CPU 做采样。你可以通过查询字符串中 seconds 参数来调节采样时间的长短（单位为秒）</p>
+</blockquote>
+<p>等待一会儿后，会进入一个交互式终端：</p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/cpu_terminal.jpg" class="" title="cpu_terminal">
+
+<p>输入 <code>top</code> 命令，查看 CPU 占用较高的调用：</p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/cpu_top.jpg" class="" title="cpu top">
+
+<p><strong>参数说明：</strong></p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>flat</td>
+<td>当前函数本身的执行耗时</td>
+</tr>
+<tr>
+<td>flat%</td>
+<td>flat 占 CPU 总时间的比例</td>
+</tr>
+<tr>
+<td>sum%</td>
+<td>上面每一行的 flat% 总和</td>
+</tr>
+<tr>
+<td>cum</td>
+<td>当前函数本身加上其周期函数的总耗时</td>
+</tr>
+<tr>
+<td>cum%</td>
+<td>cum 占 CPU 总时间的比例</td>
+</tr>
+</tbody></table>
+<p>很明显 <code>Eat</code> 方法是造成 CPU 占用过高的原因，输入 <code>list Eat</code>，查看问题具体在代码的哪一个位置：</p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/list_eat.jpg" class="" title="list eat">
+
+<p>从输出结果里可以看到对应的文件为 <code>animal/felidae/tiger/tiger.go</code>，而且具体的代码行为 24 行的一百亿次 for 循环导致的。</p>
+<p>还记得我们一开始安装的 graphviz 图形依赖吗？在安装这个工具后，我们可以通过 <code>web</code> 命令来生成一个可视化的页面：</p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/cpu_web.jpg" class="" title="cpu web">
+
+<blockquote>
+<p>注意，虽然这个命令叫 web，但它实际上是生成一个 <code>.svg</code> 文件，并调用系统默认打开它。如果你的系统打开 <code>.svg</code> 默认不是浏览器，这时候你需要设置下默认使用浏览器打开，或者使用你喜欢的查看方式来查看 svg 文件</p>
+</blockquote>
+<p>上图中，<code>Eat</code> 函数的框特别大，箭头特别粗，就是代表这个函数的 CPU 占用很高（pprof 生怕你不知道.jpg）。到这为止我们已经发现了 cpu 占用过高的原因了，我们修复下这个问题：</p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/fix_cpu.jpg" class="" title="fix cpu">
+
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/cpu_result.jpg" class="" title="fix cpu result">
+
+<h2 id="内存占用过高（Heap）"><a href="#内存占用过高（Heap）" class="headerlink" title="内存占用过高（Heap）"></a>内存占用过高（Heap）</h2><p>经过改造，可以发现CPU的问题已经解决了，但是内存使用还是很高，我们需要继续排查内存问题。</p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/heap_pre.jpg" class="" title="pre mark heap">
+
+<p>上面我们介绍了命令行与 web 页面两种方式，因为 web 页面可视化的方式排查比较直观，因此命令行排查的方式就不再展开了，输入以下命令可以看到堆内存的占用情况：</p>
+<p><code>go tool pprof -http=:8080 &quot;http://localhost:6060/debug/pprof/heap&quot;</code></p>
+<blockquote>
+<p>这个命令中 http 选项将会启动一个 web 服务器并自动打开网页。其值为 web 服务器的 endpoint</p>
+</blockquote>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/heap_web.jpg" class="" title="heap web">
+
+<p>从上图我们可以看出 <code>Mouse</code> 这个对象的 <code>Steal</code> 方法占用的内存最多，然后我们点击 <code>view</code> -&gt; <code>source</code> 还可以查看到具体的代码文件及其行数：</p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/heap_source.jpg" class="" title="heap source">
+
+<p>采样说明，<code>SAMPLE</code> 菜单中有几个选项，对应说明如下：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>alloc_objects</td>
+<td>程序累计申请的对象数</td>
+</tr>
+<tr>
+<td>alloc_space</td>
+<td>程序累计申请的内存大小</td>
+</tr>
+<tr>
+<td>inuse_objects</td>
+<td>程序当前持有的对象数</td>
+</tr>
+<tr>
+<td>inuse_space</td>
+<td>程序当前占用的内存大小</td>
+</tr>
+</tbody></table>
+<p>从代码中可以看到这么高的内存占用是因为会一直向 m.buffer 里追加长度为 1 MiB 的数组，直到总容量到达 1 GiB 为止，因此我们注释掉相关代码来解决这个问题。<br>再次编译运行，查看内存占用：</p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/heap_result.jpg" class="" title="heap result">
+
+<blockquote>
+<p>如果你发现程序运行时间长后，内存还是会升高。请不用担心，这是因为后面用于模拟内存泄漏的炸弹</p>
+</blockquote>
+<h2 id="协程（Goroutine）"><a href="#协程（Goroutine）" class="headerlink" title="协程（Goroutine）"></a>协程（Goroutine）</h2><p>虽然 Go 是带 GC 的，一般不会发生内存泄漏。但凡事都有例外，<code>goroutine</code> 泄露也会导致内存泄露。我们在浏览器 debug 页面能看到此时程序的协程数有 106 条，虽然 106 不多，但对这样一个小程序来说显然是不正常的。</p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/goroutine_count_pre.jpg" class="" title="goroutine pre">
+
+
+<p>我们仍然以可视化的方式来排查这个问题，输入以下命令查看堆内存占用情况：</p>
+<p><code>go tool pprof -http=:8080 &quot;http://localhost:6060/debug/pprof/goroutine&quot;</code></p>
+<p><code>Graph</code> 类型我们在上面已经介绍过了方块与箭头的关系，相信你也一定能理解这里的关系。那么我们这次来看看 <code>Flame Graph</code> 类型，点击 <code>view</code> -&gt; <code>Flame Graph</code>：</p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/goroutine_web.jpg" class="" title="goroutine web">
+
+<p>我们在火焰图中可以看到 <code>wolf.(*Wolf).Drink.func1</code> 这个函数占了总 goroutine 数量的 95%，我们还是像排查内存一样切换的 <code>source</code> 页面，查看代码具体位置：</p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/goroutine_source.jpg" class="" title="goroutine source">
+
+<p>可以看到，Drink 方法每次会起 10 个协程，每个协程会 sleep 30 秒再推出，而 Drink 函数又被反复的调用，这才导致了大量的协程泄漏。试想一下，如果我们业务中起的协程会永久阻塞，那么泄漏的协程数量便会持续增加，从而导致内存的持续增加，那么迟早会被 OS Kill 掉。我们通过注释掉问题代码，重新运行可以看到协程数量已经降低到个位数的水平了。</p>
+<h2 id="Mutex（锁）"><a href="#Mutex（锁）" class="headerlink" title="Mutex（锁）"></a>Mutex（锁）</h2><p>如果你跟着本文一步步走下来，到此为止我们可以说已经完成了拆蛋的工作了，这个程序的所有资源占用问题已经解决了。但日常业务中排查问题除了资源占用问题外，还有性能问题。</p>
+<p>接下来我们进一步排查性能问题，首先能想到的便是<strong>不合理的锁争用</strong>的问题，比如加锁时间太长等等。我们重新看一下 debug 页面，虽然协程数量已经大幅度降低，但还显示有一个 <code>mutex</code> 争用问题：</p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/mutex_pre.jpg" class="" title="goroutine source">
+
+
+<p>相信看到这里你已经触类旁通了，通过 Graph 查看问题出现的函数，然后通过 <code>source</code> 定位具体的代码。还是和之前一样，打开可视化页面：</p>
+<p><code>go tool pprof -http=:8080 http://localhost:6060/debug/pprof/mutex</code></p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/mutex_pre_web.jpg" class="" title="mutex web">
+
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/mutex_source.jpg" class="" title="mutex source">
+
+<p>可以看到，这个锁由主协程 Lock，并启动子协程去 Unlock，主协程会阻塞在第二次 Lock 这里等待子协程完成任务，但由于子协程足足睡眠了一秒，导致主协程等待这个锁释放足足等了一秒钟。我们对此处代码进行修改即可修复问题。</p>
+<h2 id="Block（阻塞）"><a href="#Block（阻塞）" class="headerlink" title="Block（阻塞）"></a>Block（阻塞）</h2><p>在程序中除了锁的竞争会导致阻塞外，还有很多逻辑会导致阻塞。我们继续看 debug 页面会发现，这里仍有 2 个阻塞的操作：</p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/block_pre.jpg" class="" title="block pre mark">
+
+<p>阻塞不一定是有问题的，但为了保证程序的性能，我们还是要排查一下。还是上面的那三板斧：</p>
+<p><code>go tool pprof -http=:8080 http://localhost:6060/debug/pprof/block</code></p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/block_web.jpg" class="" title="block web graph">
+
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/block_source.jpg" class="" title="block source">
+
+<p>可以看到这里不同于直接 sleep 一秒，这里是从一个 channel 里读数据时，发生了阻塞。直到这个 channel 在一秒后才有数据读出，因此这里会导致程序阻塞，而不是睡眠。<br>我们对此代码注释掉，重新编译运行后发现程序还有一个 block。通过排查分析后我们发现是因为程序提供了 HTTP 的 pprof 服务，程序阻塞在对 HTTP 端口的监听上，因此这个阻塞是正常的。</p>
+<h2 id="基准比对的排查方式"><a href="#基准比对的排查方式" class="headerlink" title="基准比对的排查方式"></a>基准比对的排查方式</h2><p>pprof 中有一个 <code>-base</code> 选项，它用于指定基准采样文件，这样可以通过比较两个采样数据，从而查看到指标的变化，例如函数的 CPU 使用时间或内存分配情况。</p>
+<p>举个具体的例子，在业务中有一个低频调用的接口存在内存泄漏（OOM），它每被调用一就会泄漏 1MiB 的内存。这个接口每天被调用10次。假设我们给这个服务分配了 100Mi 空余的内存，也就是说这个接口基本上每十天就会挂一次，但当我们排查问题的时候，会发现内存是缓慢增长的。此时如果你仅通过 pprof 采样单个文件来观察，基本上很难会发现泄漏点。</p>
+<p>这时候 <code>base</code> 选项就派上用场了，我们可以在服务启动后采集一个基准样本，过几天后再采集一次。通过比对这两个样本增量数据，我们就很容易发现出泄漏点。</p>
+<p>同样的，这个炸弹我也已经预埋了这样一个缓慢的泄漏点，但时间我缩短了一下。相信在上面的实操过程中你也发现了端倪，下面我们开始实操一下。</p>
+<p>我们运行这个炸弹程序，将启动时的堆内存分配情况保存下来，你可以在 debug 页面点击下载，也可以在终端中执行 <code>curl -o heap-base http://localhost:6060/debug/pprof/heap</code> 来下载。</p>
+<p>在资源管理器中我们可以看到程序刚启动的时候，内存占用并不高：</p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/base_pre.jpg" class="" title="base pre">
+
+<p>在程序运行了半分钟后，我们可以清楚的发现程序内存开始逐渐增长：</p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/base_pre_target.jpg" class="" title="base pre target">
+
+<p>此时我们再执行 <code>curl -o heap-target http://localhost:6060/debug/pprof/heap</code> 获取到当前的采样数据。</p>
+<blockquote>
+<p>在 debug 页面中直接点击 heap 链接会打开一个新的页面，你可以通过删除该页面 URL 中的 debug&#x3D;1 这个查询字符串来下载数据文件</p>
+</blockquote>
+<p>再获取到两个样本数据后，我们通过 <code>base</code> 选项将 <code>heap-base</code> 作为基准，查看运行的这段时间内哪里内存增长了</p>
+<p><code>go tool pprof -http=:8080 -base heap-base heap-target</code></p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/base_web.jpg" class="" title="base web compare">
+
+<p>显然在这段时间中 <code>mouse</code> 的 <code>Pee</code> 方法增长了 1.20GB，显然这就是内存泄漏的地方，接下来还是通过那三板斧来定位出问题的代码，然后注释修复：</p>
+<img src="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/base_source.jpg" class="" title="base source">
+
+<p>这里主要展示了如果通过 <code>base</code> 参数比对两个 pprof 采样文件，从而提高我们排查问题的效率。</p>
+<blockquote>
+<p>在 Graph 页面你可能会发现有一些绿色框框存在，机智的你肯定也能猜到绿色框框代表的就是减少的使用量</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文主要内容为 pprof 工具的使用，介绍了通过命令行、可视化等方式进行排查。虽然例子比较简单，但是相信通过这些简单的例子可以让你不在畏惧 pprof。</p>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://blog.wolfogre.com/posts/go-ppof-practice/">golang pprof 实战</a></li>
+</ul>
+</div><div id="donate"><link rel="stylesheet" type="text/css" href="/css/donate.css?v=1.0.0"><script type="text/javascript" src="/js/donate.js?v=1.0.0" successtext="复制成功！"></script><a class="pos-f tr3" id="github" href="https://github.com/farmerChillax" target="_blank" title="Github"></a><div id="DonateText">Donate</div><ul class="list pos-f" id="donateBox"><li id="AliPay" qr="/img/AliPayQR.jpg"></li><li id="WeChat" qr="/img/WeChatQR.jpg"></li></ul><div class="pos-f left-100" id="QRBox"><div id="MainBox"></div></div></div><script type="text/javascript" src="/js/share.js?v=1.0.0" async></script><a class="article-share-link" data-url="https://blog.farmer233.top/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/" data-id="clovr75ek0011bn32735d698o" data-qrcode="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPYAAAD2CAAAAADAeSUUAAADJElEQVR42u3ay04jUQwFQP7/pxlpViMB4RybSMRTvYpC0+26WVh+vL3F1/vf6+M3/37/8Zv2OfmVv3F1YWNjY78IO3/BV4CvQnkc6OOgH9/TPv+Tt2BjY2OfYz9ONm1yyg+uPYLkvUnixMbGxv4/2e3L8pSWf27vxMbGxsZuE1LyhKSESCLExsbGxm6bSnnLKQ86bxJtDhcbGxv7Nrsd9P7mz0+cb2NjY2P/SvZsUaZd7pmlyXYIUSiwsbGxD7Hz9tBmJLBJls8oXbCxsbEvsWct+3whcpb8Zq2rolzBxsbGPsqepZ92XXJzfMmP8TiNfVKBYWNjY59gz9JJ/bJFi79NilEvDRsbG/sQezY0bZNK2xhql4GSQ8HGxsa+x86TUJvS8gFDMpwoMHkphY2NjX2C3a7LtMPgtvG0aUIV0WJjY2OfY89a8LOUlqSi2TCgSMbY2NjY59h5inovr6TdM1sV2jwfGxsb+xI7X7LJkZsezmyU26Y0bGxs7EvspImTN4BmA4b2OParP9jY2Ni32TNwXgC0/9sWHvWgFxsbG/soOykSNiOB/AlP2bfBxsbGPsrevL5Ne+3w+GeTKzY2NvYl9rAps0bmgT5vuQcbGxv7Bnvfys9D3Lf1Z+0kbGxs7NvspGHUAtqm/2bpJ2ldRTtK2NjY2C/LToqENrifSmybJtQ3g2dsbGzsQ+xZt7wtMPJhcH6USVSRBRsbG/vF2fmgt002+0JlNiqInoyNjY19iD0rITa5YE/Kf4B6PICNjY39guy8yZ4noU1AefrMo8XGxsa+zc7b97PFx7Y4SRpMP5XwsLGxsW+w3+OrLU7ypv9mZNuOdbGxsbGvst/ia5OE2oHu5ui/uRMbGxv7HHuWxmahzELfrPV8ubKDjY2NfYK9D3Q23N0MbvfNJmxsbOx77E0B0N7ZFi2bBPbN/2JjY2OfY7eBJn+djQra9aCkjBnOt7GxsbHPsTdDgsehb4qT5HCxsbGxsTdHMxsDbBZ3ooPAxsbGPseeDXfbxtNscadd+ol+PGxsbOxD7HbQuxniJsVGUoTkLa3V+g42Njb2b2f/AeUq1Jg4metNAAAAAElFTkSuQmCC">分享</a><div class="tags"><ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Golang/" rel="tag">Golang</a></li></ul></div><div class="post-nav"><a class="pre" href="/2023/09/27/MySQL%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%B4%A2%E5%BC%95/">MySQL的存储与索引(InnoDB)</a><a class="next" href="/2022/03/15/%E7%94%9F%EF%BC%8C%E6%B4%BB/">生，活</a></div><div id="container"></div><link rel="stylesheet" type="text/css" href="//unpkg.com/gitalk/dist/gitalk.css"><script type="text/javascript" src="//cdn.bootcss.com/blueimp-md5/2.10.0/js/md5.js"></script><script type="text/javascript" src="//unpkg.com/gitalk/dist/gitalk.min.js"></script><script>var gitalk = new Gitalk({
+  clientID: '0a5a339e4c6a3cc81b76',
+  clientSecret: 'ce2b79ca94465b2a758faca9e0b95e4df38d6204',
+  repo: 'FarmerChillax.github.io',
+  owner: 'FarmerChillax',
+  admin: ['FarmerChillax'],
+  id: md5(location.pathname),
+  distractionFreeMode: false
+})
+gitalk.render('container')
+</script></div></div></div><div class="pure-u-1-4 hidden_mid_and_down"><div id="sidebar"><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/MySQL/">MySQL</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%AD%A6%E4%BA%86%E4%BA%9B%E4%BB%80%E4%B9%88/">学了些什么</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%90%9E%E4%BA%8B%E6%83%85/">搞事情</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%83%A1%E6%80%9D%E4%B9%B1%E8%AF%AD/">胡思乱语</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Golang/" style="font-size: 15px;">Golang</a> <a href="/tags/%E8%83%A1%E8%A8%80%E4%B9%B1%E8%AF%AD/" style="font-size: 15px;">胡言乱语</a> <a href="/tags/%E7%88%AC%E8%99%AB/" style="font-size: 15px;">爬虫</a> <a href="/tags/%E6%AD%A3%E6%96%B9%E6%95%99%E5%8A%A1%E7%B3%BB%E7%BB%9F/" style="font-size: 15px;">正方教务系统</a> <a href="/tags/nginx/" style="font-size: 15px;">nginx</a> <a href="/tags/python/" style="font-size: 15px;">python</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/" style="font-size: 15px;">计算机网络基础</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/%E7%AC%94%E8%AE%B0/" style="font-size: 15px;">笔记</a> <a href="/tags/CTF/" style="font-size: 15px;">CTF</a> <a href="/tags/JavaScript/" style="font-size: 15px;">JavaScript</a> <a href="/tags/C%E8%AF%AD%E8%A8%80/" style="font-size: 15px;">C语言</a> <a href="/tags/%E5%88%B7%E9%A2%98/" style="font-size: 15px;">刷题</a> <a href="/tags/PTA/" style="font-size: 15px;">PTA</a> <a href="/tags/%E5%89%8D%E7%AB%AF/" style="font-size: 15px;">前端</a> <a href="/tags/web/" style="font-size: 15px;">web</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="font-size: 15px;">数据库</a> <a href="/tags/DDNS/" style="font-size: 15px;">DDNS</a> <a href="/tags/%E7%94%9F%E6%B4%BB%E8%AE%B0%E5%BD%95/" style="font-size: 15px;">生活记录</a> <a href="/tags/%E5%90%90%E6%A7%BD/" style="font-size: 15px;">吐槽</a> <a href="/tags/%E9%BB%91%E6%9A%97%E6%96%99%E7%90%86/" style="font-size: 15px;">黑暗料理</a> <a href="/tags/TypeScript/" style="font-size: 15px;">TypeScript</a> <a href="/tags/vs-code/" style="font-size: 15px;">vs code</a> <a href="/tags/%E6%8F%92%E4%BB%B6/" style="font-size: 15px;">插件</a> <a href="/tags/Flask-APIFlask/" style="font-size: 15px;">Flask/APIFlask</a> <a href="/tags/emotion/" style="font-size: 15px;">emotion</a> <a href="/tags/Rust/" style="font-size: 15px;">Rust</a> <a href="/tags/%E8%93%9D%E6%A1%A5%E6%9D%AF/" style="font-size: 15px;">蓝桥杯</a> <a href="/tags/%E7%AE%97%E6%B3%95%E5%92%8C%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" style="font-size: 15px;">算法和数据结构</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 15px;">操作系统</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最近文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2023/10/13/%E3%80%8AOSTEP%E3%80%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%BB%8B%E7%BB%8D/">《OSTEP》学习笔记（一）操作系统介绍</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/09/27/MySQL%E7%9A%84%E5%AD%98%E5%82%A8%E4%B8%8E%E7%B4%A2%E5%BC%95/">MySQL的存储与索引(InnoDB)</a></li><li class="post-list-item"><a class="post-list-link" href="/2023/07/04/Go%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%B7%A5%E5%85%B7/">Go性能分析工具</a></li><li class="post-list-item"><a class="post-list-link" href="/2022/03/15/%E7%94%9F%EF%BC%8C%E6%B4%BB/">生，活</a></li><li class="post-list-item"><a class="post-list-link" href="/2022/03/09/%E6%89%8B%E6%8A%8A%E6%89%8B%E6%95%99%E4%BD%A0%E7%94%A8APIFlask%E5%81%9A%E6%AF%95%E4%B8%9A%E8%AE%BE%E8%AE%A1%E2%80%94%E2%80%94%E5%90%8E%E7%AB%AF/">手把手教你用APIFlask做毕业设计后端—基本简介与Hello APIFlask!(一)</a></li><li class="post-list-item"><a class="post-list-link" href="/2022/01/15/%E7%94%A8Rust%E4%B8%BAPython%E5%8A%A0%E5%8F%8C%E7%BF%85%E8%86%80/">用Rust为Python加双翅膀</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/12/08/%E7%A7%8B%E6%8B%9B%E6%9D%82%E8%B0%88/">校招杂谈</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/11/07/Review-of-life-in-university/">Review of life in university ✔</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/09/05/A-distributed-with-Go/">A distributed system with Go</a></li><li class="post-list-item"><a class="post-list-link" href="/2021/09/03/%E6%96%B0%E7%89%88%E6%AD%A3%E6%96%B9%E6%95%99%E5%8A%A1%E7%B3%BB%E7%BB%9F%E7%99%BB%E5%BD%95%E5%AE%9E%E7%8E%B0/">新版正方教务系统登录实现</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="https://blog.xiaotao233.top/" title="咸鱼的窝" target="_blank">咸鱼的窝</a><ul></ul><a href="https://blog.diyxi.top/" title="DIY，熙!" target="_blank">DIY，熙!</a><ul></ul><a href="https://darkroom.vip/" title="Dark的小黑屋" target="_blank">Dark的小黑屋</a><ul></ul><a href="https://blog.ziki2333.top/" title="ziki" target="_blank">ziki</a><ul></ul><a href="https://blog.feldan.top/" title="feldan" target="_blank">feldan</a><ul></ul><a href="https://blog.xiaohao233.top/" title="Twacの自习室" target="_blank">Twacの自习室</a><ul></ul><a href="https://greyli.com/" title="Grey Li" target="_blank">Grey Li</a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">Copyright © 2023 <a href="/." rel="nofollow">Farmer.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a class="show" id="rocket" href="#top"></a><script type="text/javascript" src="/js/totop.js?v=1.0.0" async></script><script type="text/javascript" src="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.js"></script><script type="text/javascript" src="/js/fancybox.js?v=1.0.0"></script><link rel="stylesheet" type="text/css" href="//lib.baomitu.com/fancybox/latest/jquery.fancybox.min.css"><script type="text/javascript" src="/js/copycode.js?v=1.0.0" successtext="复制成功！"></script><link rel="stylesheet" type="text/css" href="/css/copycode.css?v=1.0.0"><script type="text/javascript" src="/js/codeblock-resizer.js?v=1.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=1.0.0"></script></div></body></html>
